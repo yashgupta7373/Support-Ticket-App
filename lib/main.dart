@@ -1,23 +1,41 @@
 import 'package:fintechticket/screens/splesh_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/login_screen.dart';
+import 'screens/dashboard_screen.dart';
 
 void main() {
-  runApp(const TicketApp());
+  runApp(const MyApp());
 }
 
-class TicketApp extends StatelessWidget {
-  const TicketApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  // This widget is the root of your application.
+  Future<bool> checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Neobyt',
       debugShowCheckedModeBanner: false,
-      title: 'Neobyt Support Ticket',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF874ECF)),
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      home: FutureBuilder<bool>(
+        future: checkLoginStatus(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SplashScreen(); // show splash while checking
+          } else {
+            if (snapshot.data == true) {
+              return DashboardScreen(); // already logged in
+            } else {
+              return const LoginScreen(); // not logged in
+            }
+          }
+        },
       ),
-      home: const SplashScreen(),
     );
   }
 }

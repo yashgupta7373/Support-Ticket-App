@@ -1,6 +1,6 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dashboard_screen.dart';
 
@@ -23,6 +23,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return (1000 + rng.nextInt(9000)).toString(); // 4-digit OTP
   }
 
+  Future<void> setLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,27 +38,38 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Header with logo + title
             Container(
               height: 180,
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.deepPurpleAccent,
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(200)),
-              ),
-              child: Column(children: [
-                // Logo
-                Image.asset(
-                  'assets/images/neobytLogo.png',
-                  height: 60,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(200),
                 ),
-                SizedBox(height: 10),
-                //Title
-                Text('Neobyt', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 40))
-              ],),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/neobytLogo.png',
+                    height: 60,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Neobyt',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 40),
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 10),
 
+            // Body content
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -62,15 +78,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        //Title
-                        Text('Login', style: TextStyle(color: Color(0xFF874ECF), fontWeight: FontWeight.bold, fontSize: 40)),
-                        SizedBox(height: 40),
+                        const Text(
+                          'Login',
+                          style: TextStyle(
+                              color: Color(0xFF874ECF),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40),
+                        ),
+                        const SizedBox(height: 40),
 
-                        //email or phone no..
+                        // Email/Phone field
                         TextField(
                           controller: emailController,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.email, color: Color(0xFF874ECF)),
+                            prefixIcon: const Icon(Icons.email,
+                                color: Color(0xFF874ECF)),
                             labelText: "Email or Phone",
                             hintText: "Enter registered email/phone no.",
                             border: OutlineInputBorder(
@@ -79,14 +101,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                        // get otp link
+                        // Get OTP button
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              // send otp on registered email or phone number
                               if (emailController.text.isNotEmpty) {
-                                setState(()=>generatedOtp = generateOTP());
+                                setState(() => generatedOtp = generateOTP());
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
@@ -96,25 +117,30 @@ class _LoginScreenState extends State<LoginScreen> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text("Enter Email/Phone first")),
+                                      content:
+                                      Text("Enter Email/Phone first")),
                                 );
                               }
                             },
-                            child: Text(
-                              "get verification code",
-                              style: TextStyle(color: Color(0xFF874ECF), fontWeight: FontWeight.bold, fontSize: 15)
-                            )
+                            child: const Text(
+                              "Get verification code",
+                              style: TextStyle(
+                                  color: Color(0xFF874ECF),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
                           ),
                         ),
 
                         const SizedBox(height: 10),
 
-                        // otp field
+                        // OTP field
                         TextField(
                           controller: otpController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.password, color: Color(0xFF874ECF)),
+                            prefixIcon: const Icon(Icons.password,
+                                color: Color(0xFF874ECF)),
                             labelText: "OTP",
                             hintText: "Enter OTP",
                             border: OutlineInputBorder(
@@ -138,17 +164,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                   const SnackBar(
                                       content: Text("Please fill all fields")),
                                 );
+                                return;
                               }
 
                               if (enteredOtp == generatedOtp) {
+                                setLoggedIn(); // fire and forget (no await)
+
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text("Login Successful!")),
                                 );
-                                // Navigate to Dashboard Screen
+
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (_) => DashboardScreen(userEmail: emailController.text.trim())),
+                                  MaterialPageRoute(
+                                      builder: (_) => DashboardScreen(
+                                          userEmail: emailController.text)),
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -157,28 +188,26 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF874ECF),
-                              padding: EdgeInsets.symmetric(vertical: 15),
+                              backgroundColor: const Color(0xFF874ECF),
+                              padding:
+                              const EdgeInsets.symmetric(vertical: 15),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: Text(
+                            child: const Text(
                               "Login",
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 18, color: Colors.white),
                             ),
                           ),
                         ),
-
-
                       ],
                     ),
                   ),
                 ),
               ),
             )
-            // Email / Phone field
-
           ],
         ),
       ),
