@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../utils/colors.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_input_field.dart';
 import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,7 +16,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
-
   String? generatedOtp; // store OTP
 
   // Generate random OTP
@@ -28,11 +29,63 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setBool('isLoggedIn', true);
   }
 
+  // handel get otp button
+  void _handleGetVerificationCode() {
+    if (emailController.text.isNotEmpty) {
+      setState(() => generatedOtp = generateOTP());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("OTP Sent: $generatedOtp (demo only)"),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Enter Email/Phone first"),
+        ),
+      );
+    }
+  }
+
+  // handel login button
+  void _handleLoginButton() {
+    String enteredOtp = otpController.text.trim();
+
+    if (emailController.text.isEmpty ||
+        enteredOtp.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
+    if (enteredOtp == generatedOtp) {
+      setLoggedIn(); // fire and forget (no await)
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Login Successful!")),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (_) => DashboardScreen(
+                userEmail: emailController.text)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Invalid OTP")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.deepPurpleAccent),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(backgroundColor: AppColors.primary),
       body: SizedBox(
         height: double.infinity,
         child: Column(
@@ -43,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 180,
               width: double.infinity,
               decoration: const BoxDecoration(
-                color: Colors.deepPurpleAccent,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(200),
                 ),
@@ -59,14 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text(
                     'Neobyt',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 40),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 10),
 
             // Body content
@@ -81,47 +133,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text(
                           'Login',
                           style: TextStyle(
-                              color: Color(0xFF874ECF),
+                              color: AppColors.primary,
                               fontWeight: FontWeight.bold,
                               fontSize: 40),
                         ),
                         const SizedBox(height: 40),
 
                         // Email/Phone field
-                        TextField(
+                        CustomInputField(
                           controller: emailController,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.email,
-                                color: Color(0xFF874ECF)),
-                            labelText: "Email or Phone",
-                            hintText: "Enter registered email/phone no.",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                          label: "Email or Phone",
+                          hint: "Enter registered email/phone no.",
+                          icon: Icons.email,
+                          keyboardType: TextInputType.emailAddress,
                         ),
 
                         // Get OTP button
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {
-                              if (emailController.text.isNotEmpty) {
-                                setState(() => generatedOtp = generateOTP());
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        "OTP Sent: $generatedOtp (demo only)"),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                      Text("Enter Email/Phone first")),
-                                );
-                              }
-                            },
+                            onPressed: _handleGetVerificationCode,
                             child: const Text(
                               "Get verification code",
                               style: TextStyle(
@@ -131,75 +162,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 10),
 
                         // OTP field
-                        TextField(
+                        CustomInputField(
                           controller: otpController,
+                          label: "OTP",
+                          hint: "Enter 4-digit OTP",
+                          icon: Icons.verified,
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.password,
-                                color: Color(0xFF874ECF)),
-                            labelText: "OTP",
-                            hintText: "Enter OTP",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                          maxLength: 6,
                         ),
-
                         const SizedBox(height: 30),
 
                         // Login Button
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              String enteredOtp = otpController.text.trim();
-
-                              if (emailController.text.isEmpty ||
-                                  enteredOtp.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Please fill all fields")),
-                                );
-                                return;
-                              }
-
-                              if (enteredOtp == generatedOtp) {
-                                setLoggedIn(); // fire and forget (no await)
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Login Successful!")),
-                                );
-
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => DashboardScreen(
-                                          userEmail: emailController.text)),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Invalid OTP")),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF874ECF),
-                              padding:
-                              const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.white),
-                            ),
+                          child: CustomButton(
+                            text: "Login",
+                            onPressed: _handleLoginButton,
                           ),
                         ),
                       ],

@@ -2,6 +2,8 @@ import 'package:fintechticket/screens/login_screen.dart';
 import 'package:fintechticket/screens/raise_new_ticket_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/colors.dart';
+import '../widgets/dashboard_card.dart';
 import 'my_tickets.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -10,6 +12,7 @@ class DashboardScreen extends StatelessWidget {
 
   DashboardScreen({super.key, this.userEmail, this.userName = "User"});
 
+  //logout button logic
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false); // clear login flag
@@ -24,20 +27,20 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         title: const Text(
           "Dashboard",
           style: TextStyle(
-            color: Color(0xFF874ECF),
+            color: AppColors.textSecondary,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Color(0xFF874ECF)),
+            icon: const Icon(Icons.logout, color: AppColors.textSecondary),
             onPressed: () => logout(context),
           ),
         ],
@@ -50,9 +53,9 @@ class DashboardScreen extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xB0874ECF),
-                Color(0xFF874ECF),
-                Colors.deepPurpleAccent,
+                AppColors.accent,
+                AppColors.primary,
+                AppColors.accentDark,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -74,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -87,7 +90,7 @@ class DashboardScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         // My Tickets card
-                        _buildDashboardCard(
+                        DashboardCard(
                           title: "My\nTicket",
                           onTap: () {
                             // Navigate to My Tickets Page
@@ -101,7 +104,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 50),
                         // Raise Ticket card
-                        _buildDashboardCard(
+                        DashboardCard(
                           title: "Raise\nNew Ticket",
                           onTap: () {
                             // Navigate to Raise Ticket Page
@@ -124,49 +127,4 @@ class DashboardScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-//Reusable Dashboard Card
-Widget _buildDashboardCard({
-  required String title,
-  required VoidCallback onTap,
-}) {
-  return InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(20),
-    child: Container(
-      height: 180,
-      width: 300,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(100),
-          topLeft: Radius.circular(20),
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3), // softer shadow
-            spreadRadius: 1,
-            blurRadius: 6,
-            offset: const Offset(2, 4), // shadow position
-          ),
-        ],
-        border: Border.all(color: Color(0xFF874ECF), width: 2),
-      ),
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-            fontFamily: 'UbuntuBold',
-            color: Color(0xDB874ECF),
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    ),
-  );
 }

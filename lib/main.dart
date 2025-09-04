@@ -1,4 +1,5 @@
 import 'package:fintechticket/screens/splesh_screen.dart';
+import 'package:fintechticket/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
@@ -10,7 +11,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   Future<bool> checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('isLoggedIn') ?? false;
@@ -21,17 +21,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Neobyt',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      // theme: ThemeData(primarySwatch: AppColors.primary),
       home: FutureBuilder<bool>(
         future: checkLoginStatus(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SplashScreen(); // show splash while checking
+            return const SplashScreen();
           } else {
             if (snapshot.data == true) {
-              return DashboardScreen(); // already logged in
+              return DashboardScreen();
             } else {
-              return const LoginScreen(); // not logged in
+              return const LoginScreen();
             }
           }
         },

@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../utils/colors.dart';
+import '../widgets/custom_icon_button.dart';
+import '../widgets/custom_text_form_field.dart';
 
 class RaiseTicketScreen extends StatefulWidget {
   const RaiseTicketScreen({super.key});
@@ -31,6 +34,18 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
     }
   }
 
+  void _handleSubmitTicketButton(){
+    if (_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Ticket Submitted Successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context); // go back to dashboard
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,12 +53,12 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
         title: const Text(
           "Raise New Ticket",
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color(0xFF874ECF),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
+        backgroundColor: AppColors.primary,
         elevation: 2,
       ),
       body: Padding(
@@ -54,18 +69,13 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                // Transaction ID
-                TextFormField(
+                CustomTextFormField(
                   controller: _transactionIdController,
-                  decoration: InputDecoration(
-                    labelText: "Transaction ID",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  label: "Transaction ID",
+                  hint: "Enter transaction ID",
+                  icon: Icons.confirmation_number,
                   validator: (value) =>
-                  value!.isEmpty ? "Please enter transaction ID" : null,
+                  value == null || value.isEmpty ? "Please enter transaction ID" : null,
                 ),
                 const SizedBox(height: 20),
 
@@ -93,44 +103,35 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
                 const SizedBox(height: 20),
 
                 // Description
-                TextFormField(
+                CustomTextFormField(
                   controller: _descriptionController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    labelText: "Description",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  label: "Description",
+                  hint: "Enter description",
+                  maxLines: 4, // supports multiline
                   validator: (value) =>
-                  value!.isEmpty ? "Please enter description" : null,
+                  value == null || value.isEmpty ? "Please enter description" : null,
                 ),
                 const SizedBox(height: 20),
 
                 // Upload Screenshot
                 Text(
                   "Upload Screenshot:",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.primary),
                 ),
                 const SizedBox(height: 10),
+
                 Row(
                   children: [
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF874ECF),
-                      ),
+                    CustomIconButton(
                       onPressed: () => _pickImage(ImageSource.gallery),
-                      icon: Icon(Icons.image, color: Colors.white),
-                      label: Text("Gallery", style: TextStyle(color: Colors.white)),
+                      icon: Icons.image,
+                      label: "Gallery",
                     ),
                     const SizedBox(width: 15),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF874ECF),
-                      ),
+                    CustomIconButton(
                       onPressed: () => _pickImage(ImageSource.camera),
-                      icon: Icon(Icons.camera_alt, color: Colors.white),
-                      label: Text("Camera", style: TextStyle(color: Colors.white)),
+                      icon: Icons.camera_alt,
+                      label: "Camera",
                     ),
                   ],
                 ),
@@ -150,29 +151,11 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
 
                 // Submit Button
                 Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF874ECF),
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Ticket Submitted Successfully!"),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                        Navigator.pop(context); // go back to dashboard
-                      }
-                    },
-                    child: Text(
-                      "Submit Ticket",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
+                  child: CustomIconButton(
+                    onPressed: _handleSubmitTicketButton,
+                    label: "Submit Ticket",
+                    backgroundColor: const Color(0xFF874ECF),
+                    textColor: Colors.white,
                   ),
                 )
               ],

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../utils/colors.dart';
+import '../utils/ticket_data.dart';
 
 class TicketDetailScreen extends StatefulWidget {
   final Map<String, dynamic> ticket;
-
   const TicketDetailScreen({super.key, required this.ticket});
 
   @override
@@ -12,24 +13,8 @@ class TicketDetailScreen extends StatefulWidget {
 class _TicketDetailScreenState extends State<TicketDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
 
-  // Dummy chat list (can later fetch from DB/API)
-  List<Map<String, String>> chatMessages = [
-    {"sender": "User", "message": "I raised this issue yesterday."},
-    {"sender": "Support", "message": "Thanks! We are looking into it."},
-  ];
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case "Resolved":
-        return Colors.green;
-      case "Pending":
-        return Colors.orange;
-      case "Open":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
+  // Use the dummy chat from utils
+  List<Map<String, String>> chatMessages = List.from(dummyChatMessages);
 
   void _sendMessage() {
     if (_messageController.text.trim().isNotEmpty) {
@@ -49,21 +34,30 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Ticket Details", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          "Ticket Details",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
         elevation: 2,
-        backgroundColor: Color(0xFF874ECF),
+        backgroundColor: AppColors.primary,
       ),
       body: Column(
         children: [
           // Status
           Container(
             width: double.infinity,
-            color: _getStatusColor(ticket["status"]),
+            color: getStatusColor(ticket["status"]), // use utils function
             padding: EdgeInsets.all(12),
             child: Text(
               "Status: ${ticket["status"]}",
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
@@ -97,14 +91,12 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                     margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: isUser ? Color(0xFF874ECF) : Colors.grey[300],
+                      color: isUser ? AppColors.primary : AppColors.dflt,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       chat["message"]!,
-                      style: TextStyle(
-                        color: isUser ? Colors.white : Colors.black,
-                      ),
+                      style: TextStyle(color: AppColors.textPrimary),
                     ),
                   ),
                 );
@@ -115,7 +107,6 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
           // Input Box
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            color: Colors.grey[200],
             child: Row(
               children: [
                 Expanded(
@@ -132,7 +123,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                 ),
                 SizedBox(width: 10),
                 IconButton(
-                  icon: Icon(Icons.send, color: Color(0xFF874ECF)),
+                  icon: Icon(Icons.send, color: AppColors.accentDark, size: 30),
                   onPressed: _sendMessage,
                 ),
               ],
