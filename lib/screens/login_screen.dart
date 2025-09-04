@@ -29,21 +29,23 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setBool('isLoggedIn', true);
   }
 
-  // handel get otp button
+  // show snack bar function
+  void _showSnackBar(String message, {Color bgColor = Colors.black}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: bgColor,
+      ),
+    );
+  }
+
+  // handle get otp button
   void _handleGetVerificationCode() {
     if (emailController.text.isNotEmpty) {
       setState(() => generatedOtp = generateOTP());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("OTP Sent: $generatedOtp (demo only)"),
-        ),
-      );
+      _showSnackBar("OTP Sent: $generatedOtp (demo only)", bgColor: AppColors.resolved);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Enter Email/Phone first"),
-        ),
-      );
+      _showSnackBar("Enter Email/Phone first", bgColor: AppColors.open);
     }
   }
 
@@ -53,21 +55,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (emailController.text.isEmpty ||
         enteredOtp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Please fill all fields")),
-      );
+      _showSnackBar("Please fill all fields", bgColor: AppColors.open);
       return;
     }
 
     if (enteredOtp == generatedOtp) {
-      setLoggedIn(); // fire and forget (no await)
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Login Successful!")),
-      );
-
+      setLoggedIn();
+      _showSnackBar("Login Successful!", bgColor: AppColors.resolved);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -75,9 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 userEmail: emailController.text)),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid OTP")),
-      );
+      _showSnackBar("Invalid OTP", bgColor: AppColors.open);
     }
   }
 
@@ -91,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Header with logo + title
+            // Header with logo and title
             Container(
               height: 180,
               width: double.infinity,
@@ -121,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 10),
 
-            // Body content
+            // login form
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),

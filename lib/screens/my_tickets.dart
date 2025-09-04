@@ -4,6 +4,8 @@ import 'ticket_detail_screen.dart';
 import '../utils/colors.dart';
 
 class MyTicketScreen extends StatelessWidget {
+  const MyTicketScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +25,6 @@ class MyTicketScreen extends StatelessWidget {
         itemCount: tickets.length,
         itemBuilder: (context, index) {
           final ticket = tickets[index];
-
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: ListTile(

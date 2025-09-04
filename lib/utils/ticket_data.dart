@@ -26,7 +26,7 @@ final List<Map<String, dynamic>> tickets = [
   },
 ];
 
-// Function to get status color
+// function to get status color
 Color getStatusColor(String status) {
   switch (status) {
     case "Resolved":
@@ -40,7 +40,7 @@ Color getStatusColor(String status) {
   }
 }
 
-// Dummy chat messages for tickets
+// Dummy chat messages for chat thread
 List<Map<String, String>> dummyChatMessages = [
   {"sender": "User", "message": "I raised this issue yesterday."},
   {"sender": "Support", "message": "Thanks! We are looking into it."},

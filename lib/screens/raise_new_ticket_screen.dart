@@ -17,14 +17,12 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
 
   TextEditingController _transactionIdController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
-
   String? _selectedCategory;
   File? _selectedImage;
-
   final List<String> categories = ["Payment Issue", "Refund", "Login Issue", "Other"];
   final ImagePicker _picker = ImagePicker();
 
-  // Pick image
+  // Pick or click image
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -34,6 +32,7 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
     }
   }
 
+  // handle submit ticket button
   void _handleSubmitTicketButton(){
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -42,7 +41,7 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pop(context); // go back to dashboard
+      Navigator.pop(context);
     }
   }
 
@@ -137,6 +136,7 @@ class _RaiseTicketScreenState extends State<RaiseTicketScreen> {
                 ),
                 const SizedBox(height: 15),
 
+                // show SS if selected
                 if (_selectedImage != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),

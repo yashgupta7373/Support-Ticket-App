@@ -1,5 +1,4 @@
 import 'package:fintechticket/screens/splesh_screen.dart';
-import 'package:fintechticket/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
@@ -21,7 +20,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Neobyt',
       debugShowCheckedModeBanner: false,
-      // theme: ThemeData(primarySwatch: AppColors.primary),
       home: FutureBuilder<bool>(
         future: checkLoginStatus(),
         builder: (context, snapshot) {

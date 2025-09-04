@@ -7,20 +7,19 @@ import '../widgets/dashboard_card.dart';
 import 'my_tickets.dart';
 
 class DashboardScreen extends StatelessWidget {
-  final String? userEmail; // you can pass logged in user email/phone
-  final String userName; //user name
+  final String? userEmail;
+  final String userName;
 
-  DashboardScreen({super.key, this.userEmail, this.userName = "User"});
+  const DashboardScreen({super.key, this.userEmail, this.userName = "User"});
 
   //logout button logic
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false); // clear login flag
-
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (route) => false, // remove all previous routes
+          (route) => false,
     );
   }
 
@@ -67,7 +66,7 @@ class DashboardScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // Welcome text
+              // user name
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -107,7 +106,7 @@ class DashboardScreen extends StatelessWidget {
                         DashboardCard(
                           title: "Raise\nNew Ticket",
                           onTap: () {
-                            // Navigate to Raise Ticket Page
+                            // Navigate to Raise new Ticket Page
                             Navigator.push(
                               context,
                               MaterialPageRoute(

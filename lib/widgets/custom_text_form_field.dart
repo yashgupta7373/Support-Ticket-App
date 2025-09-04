@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../utils/colors.dart';
 
 class CustomTextFormField extends StatelessWidget {
@@ -42,7 +41,7 @@ class CustomTextFormField extends StatelessWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        counterText: "", // hides character counter
+        counterText: "",
       ),
     );
   }

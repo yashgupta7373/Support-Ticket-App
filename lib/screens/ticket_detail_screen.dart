@@ -13,9 +13,10 @@ class TicketDetailScreen extends StatefulWidget {
 class _TicketDetailScreenState extends State<TicketDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
 
-  // Use the dummy chat from utils
+  // Use the dummy chat
   List<Map<String, String>> chatMessages = List.from(dummyChatMessages);
 
+  // handle send msg button
   void _sendMessage() {
     if (_messageController.text.trim().isNotEmpty) {
       setState(() {
@@ -47,10 +48,10 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
       ),
       body: Column(
         children: [
-          // Status
+          // ticket status
           Container(
             width: double.infinity,
-            color: getStatusColor(ticket["status"]), // use utils function
+            color: getStatusColor(ticket["status"]),
             padding: EdgeInsets.all(12),
             child: Text(
               "Status: ${ticket["status"]}",
@@ -61,7 +62,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
             ),
           ),
 
-          // Ticket Info
+          // Ticket detail
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -104,7 +105,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
             ),
           ),
 
-          // Input Box
+          // send msg Box
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: Row(
